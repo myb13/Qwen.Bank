@@ -5,7 +5,7 @@ import bank.models.Customer;
 public static void main(String[] args){
     Customer cus = new Customer("MikHail", "ivanOV", "denisovich");
     Account acc1 = new Account(cus, AccountType.CHECKING, new BigDecimal(1000));
-    Account acc2 = new Account(cus, AccountType.SAVING, new BigDecimal(22000));
+    Account acc2 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
 
     System.out.println("Customer ID: " + cus.getId() + ", full name: " + cus.fullName());
     cus.accountsInfo();

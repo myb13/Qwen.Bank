@@ -47,13 +47,14 @@ public class Account {
 
     public void deposit(BigDecimal amount)
     throws IllegalArgumentException {
-        if (balance.equals(BigDecimal.ZERO)) throw new IllegalArgumentException();
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new IllegalArgumentException();
         else balance = balance.add(amount);
     }
 
     public void withdraw(BigDecimal amount)
     throws IllegalArgumentException{
-        if(balance.compareTo(amount) >= 0) balance = balance.subtract(amount);
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0 || balance.compareTo(amount) >= 0)
+            balance = balance.subtract(amount);
         else throw new IllegalArgumentException();
     }
 

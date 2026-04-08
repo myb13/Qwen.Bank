@@ -29,17 +29,24 @@ public class Customer {
     }
 
     public int getAccountsQty(){
-        return accounts == null ? 0 : accounts.length;
+        int qty = 0;
+        for(var account : accounts) {
+            if (account != null) qty++;
+            else break;
+        }
+        return qty;
     }
 
     public void associateAccount(Account account)
     throws IllegalArgumentException{
         boolean notAssociated = true;
-        for (int i = 0; i < MAX_ACC_QTY; i++) {
-            if(accounts[i] == null) {
-                accounts[i] = account;
-                notAssociated = false;
-                break;
+        if (account != null) {
+            for (int i = 0; i < MAX_ACC_QTY; i++) {
+                if (accounts[i] == null) {
+                    accounts[i] = account;
+                    notAssociated = false;
+                    break;
+                }
             }
         }
         if (notAssociated) throw new IllegalArgumentException();

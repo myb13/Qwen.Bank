@@ -1,5 +1,5 @@
 package bank.models;
 
 public enum AccountType {
-    CHECKING, SAVING
+    CHECKING, SAVINGS
 }
