@@ -1,5 +1,7 @@
 package bank.models;
 
+import bank.exceptions.*;
+
 import java.math.BigDecimal;
 
 public class Account {
@@ -10,19 +12,21 @@ public class Account {
     private AccountType type;
 
     public Account(Customer owner, AccountType type)
-    throws IllegalArgumentException{
-        if (owner == null || type == null) throw new IllegalArgumentException();
+    throws InvalidCustomerDataException, InvalidAccountDataException, AccountLimitExceededException{
+        if(owner == null) throw new InvalidCustomerDataException("владелец счёта не указан");
+        if(type == null) throw new InvalidAccountDataException("тип счёта");
         this.owner = owner;
         this.number = numberGenerate();
         this.balance = new BigDecimal(0);
         this.status = AccountStatus.ACTIVE;
         this.type = type;
-        owner.associateAccount(this);
+        try {owner.associateAccount(this);} catch (AccountLimitExceededException e) {throw e;}
     }
 
-    public Account(Customer owner, AccountType type, BigDecimal balance){
+    public Account(Customer owner, AccountType type, BigDecimal balance)
+            throws InvalidCustomerDataException, InvalidAccountDataException, AccountLimitExceededException{
         this(owner, type);
-        this.balance = balance;
+        if(balance != null) this.balance = balance;
     }
 
     public Customer getOwner() {
@@ -46,22 +50,23 @@ public class Account {
     }
 
     public void deposit(BigDecimal amount)
-    throws IllegalArgumentException {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new IllegalArgumentException();
-        else balance = balance.add(amount);
+    throws InvalidAmountException {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException();
+        balance = balance.add(amount);
     }
 
     public void withdraw(BigDecimal amount)
-    throws IllegalArgumentException{
-        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0 || balance.compareTo(amount) >= 0)
-            balance = balance.subtract(amount);
-        else throw new IllegalArgumentException();
+            throws InvalidAmountException, InsufficientFundsException {
+        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException();
+        if(balance.compareTo(amount) < 0) throw new InsufficientFundsException();
+        balance = balance.subtract(amount);
     }
 
     public void close()
-    throws IllegalArgumentException{
-        if (status != AccountStatus.CLOSED && balance.compareTo(BigDecimal.ZERO) == 0) status = AccountStatus.CLOSED;
-        else throw new IllegalArgumentException();
+    throws InvalidAccountStateException{
+        if(status == AccountStatus.CLOSED) throw new InvalidAccountStateException("счёт уже закрыт");
+        if(balance.compareTo(BigDecimal.ZERO) != 0)  throw new InvalidAccountStateException("баланс счёта ненулевой");
+        status = AccountStatus.CLOSED;
     }
 
     private String numberGenerate(){
