@@ -15,7 +15,7 @@ public class Customer {
         if(firstName == null || lastName == null) throw new IllegalArgumentException();
         this.firstName = formatName(firstName);
         this.lastName = formatName(lastName);
-        this.middleName = formatName(middleName);
+        this.middleName = middleName == null ? "" : formatName(middleName);
         accounts = new Account[MAX_ACC_QTY];
         id = getIdCustomers();
     }
