@@ -1,5 +1,7 @@
 package bank.models;
 
+import bank.exceptions.*;
+
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -11,8 +13,9 @@ public class Customer {
     private Account[] accounts;
 
     public Customer(String firstName, String lastName, String middleName)
-    throws IllegalArgumentException{
-        if(firstName == null || lastName == null) throw new IllegalArgumentException();
+    throws InvalidCustomerDataException{
+        if(firstName == null) throw new InvalidCustomerDataException("имя");
+        if(lastName == null) throw new InvalidCustomerDataException("фамилия");
         this.firstName = formatName(firstName);
         this.lastName = formatName(lastName);
         this.middleName = middleName == null ? "" : formatName(middleName);
@@ -38,18 +41,17 @@ public class Customer {
     }
 
     public void associateAccount(Account account)
-    throws IllegalArgumentException{
+    throws InvalidAccountDataException, AccountLimitExceededException{
         boolean notAssociated = true;
-        if (account != null) {
-            for (int i = 0; i < MAX_ACC_QTY; i++) {
-                if (accounts[i] == null) {
-                    accounts[i] = account;
-                    notAssociated = false;
-                    break;
-                }
+        if (account == null) throw new InvalidAccountDataException("счёт не указан");
+        for (int i = 0; i < MAX_ACC_QTY; i++) {
+            if (accounts[i] == null) {
+                accounts[i] = account;
+                notAssociated = false;
+                break;
             }
         }
-        if (notAssociated) throw new IllegalArgumentException();
+        if (notAssociated) throw new AccountLimitExceededException(MAX_ACC_QTY);
     }
 
     public Account[] getAccounts() {
