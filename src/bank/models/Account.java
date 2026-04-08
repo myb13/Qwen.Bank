@@ -51,14 +51,16 @@ public class Account {
 
     public void deposit(BigDecimal amount)
     throws InvalidAmountException {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException();
+        if (amount == null) throw new InvalidAmountException("сумма операции не заполнена");
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException("сумма операции меньше нуля");
         balance = balance.add(amount);
     }
 
     public void withdraw(BigDecimal amount)
             throws InvalidAmountException, InsufficientFundsException {
-        if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException();
-        if(balance.compareTo(amount) < 0) throw new InsufficientFundsException();
+        if (amount == null) throw new InvalidAmountException("сумма операции не заполнена");
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException("сумма операции меньше нуля");
+        if(balance.compareTo(amount) < 0) throw new InsufficientFundsException(balance, amount);
         balance = balance.subtract(amount);
     }
 

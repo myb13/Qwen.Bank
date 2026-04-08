@@ -1,11 +1,11 @@
 package bank.exceptions;
 
-public class InvalidAmountException extends BankingException{
+public class InvalidAmountException extends BankingExceptionWithReason{
     private static String MSG = "Некорректная сумма операции";
-    public InvalidAmountException(){
-        super(MSG);
+    public InvalidAmountException(String reason){
+        super(MSG, reason);
     }
-    public InvalidAmountException(Throwable e){
-        super(MSG, e);
+    public InvalidAmountException(String reason, Throwable e){
+        super(MSG, reason, e);
     }
 }

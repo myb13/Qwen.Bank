@@ -7,21 +7,26 @@ import bank.models.Customer;
 
 public static void main(String[] args){
     Customer cus;
-    Account acc1, acc2;
+    Account acc1, acc2, acc3, acc4, acc5, acc6;
     try {
         cus = new Customer("MikHail", "ivanOV", null);
         System.out.println("Customer ID: " + cus.getId() + ", full name: " + cus.fullName());
 
         try {
             acc1 = new Account(cus, AccountType.CHECKING, new BigDecimal(1000));
-            acc2 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
-
             try {acc1.withdraw(new BigDecimal(15000));} catch (BankingException e) {System.out.println(e.getMessage());}
+            acc2 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+            acc3 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+            acc4 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+            acc5 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+            acc6 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+
+
             try {acc2.deposit(new BigDecimal(1000));} catch (BankingException e) {System.out.println(e.getMessage());}
             cus.accountsInfo();
 
             try {acc1.withdraw(new BigDecimal(15000));} catch (BankingException e) {System.out.println(e.getMessage());}
-            try {acc2.close();} catch (BankingException e) {e.getMessage();}
+            try {acc2.close();} catch (BankingException e) {System.out.println(e.getMessage());}
             cus.accountsInfo();
 
             try {acc1.deposit(new BigDecimal(133));} catch (BankingException e) {System.out.println(e.getMessage());}
