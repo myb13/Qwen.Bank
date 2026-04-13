@@ -2,10 +2,12 @@ package bank.repository;
 import bank.exceptions.*;
 import bank.models.*;
 
+import java.util.Arrays;
+
 public class InMemoryAccountRepository implements AccountRepository{
     private static int MAX_ENTITIES = 100;
-    private static int current_entities;
-    private static Account[] accounts;
+    private int current_entities;
+    private Account[] accounts;
 
     public InMemoryAccountRepository(){
         accounts = new Account[MAX_ENTITIES];
@@ -13,7 +15,7 @@ public class InMemoryAccountRepository implements AccountRepository{
     }
     public void save(Account account) throws InMemoryAccountLimitException, InvalidAccountDataException {
         if (account != null) {
-            if (current_entities < MAX_ENTITIES) accounts[++current_entities] = account;
+            if (current_entities < MAX_ENTITIES) accounts[current_entities++] = account;
             else throw new InMemoryAccountLimitException(MAX_ENTITIES);
         } else {throw new InvalidAccountDataException("объект account");}
     }
@@ -25,7 +27,7 @@ public class InMemoryAccountRepository implements AccountRepository{
 
     @Override
     public Account[] findAll() {
-        return accounts;
+        return Arrays.copyOf(accounts, current_entities);
     }
 
     @Override
@@ -46,8 +48,15 @@ public class InMemoryAccountRepository implements AccountRepository{
 
     private int getEntity (String number) throws InMemoryAccountNotFoundException {
         for(int accountIdx = 0; accountIdx < accounts.length; accountIdx++){
-            if (accounts[accountIdx] != null && accounts[accountIdx].getNumber() == number) return accountIdx;
+            if (accounts[accountIdx] != null && accounts[accountIdx].getNumber().equals(number)) return accountIdx;
         }
         throw new InMemoryAccountNotFoundException("number", number);
+    }
+
+    private int getEntity (int customerId) throws InMemoryAccountNotFoundException {
+        for(int accountIdx = 0; accountIdx < accounts.length; accountIdx++){
+            if (accounts[accountIdx] != null && accounts[accountIdx].getOwner().getId() == customerId) return accountIdx;
+        }
+        throw new InMemoryAccountNotFoundException("customerId", Integer.toString(customerId));
     }
 }

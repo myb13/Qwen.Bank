@@ -5,10 +5,12 @@ import bank.exceptions.InMemoryCustomerNotFoundException;
 import bank.exceptions.InvalidCustomerDataException;
 import bank.models.Customer;
 
+import java.util.Arrays;
+
 public class InMemoryCustomerRepository implements CustomerRepository {
     private static int MAX_ENTITIES = 100;
-    private static int current_entities;
-    private static Customer[] customers;
+    private int current_entities;
+    private Customer[] customers;
 
     public InMemoryCustomerRepository() {
         customers = new Customer[MAX_ENTITIES];
@@ -34,7 +36,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
 
     @Override
     public Customer[] findAll() {
-        return customers;
+        return Arrays.copyOf(customers, current_entities);
     }
 
     @Override
