@@ -1,6 +1,9 @@
 package bank.models;
 
 import bank.exceptions.*;
+import bank.repository.AccountRepository;
+import bank.repository.InMemoryAccountRepository;
+import bank.repository.InMemoryCustomerRepository;
 
 import java.util.Arrays;
 import java.util.Locale;
