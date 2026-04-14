@@ -6,12 +6,14 @@ import bank.models.AccountType;
 import bank.models.Customer;
 import bank.repository.InMemoryAccountRepository;
 import bank.repository.InMemoryCustomerRepository;
+import bank.service.AccountService;
 
 public static void main(String[] args){
     Customer cus, cus2;
     Account acc1, acc2, acc3, acc4, acc5, acc6;
     InMemoryAccountRepository accountRepository = new InMemoryAccountRepository();
     InMemoryCustomerRepository customerRepository = new InMemoryCustomerRepository();
+    AccountService bankTransfer = new AccountService(accountRepository, customerRepository);
     try {
         cus = new Customer("MikHail", "ivanOV", null);
         customerRepository.save(cus);
@@ -34,13 +36,19 @@ public static void main(String[] args){
             acc6 = new Account(cus2, AccountType.SAVINGS, new BigDecimal(22000));
             accountRepository.save(acc6);
 
-            cus.accountsInfo();
-            System.out.println();
-            cus2.accountsInfo();
-            System.out.println();
-            System.out.println("found cus in repo: " + customerRepository.findById(1).fullName());
-            customerRepository.deleteById(1);
-            System.out.println("found cus in repo: " + customerRepository.findById(1).fullName());
+            System.out.printf("Баланс до. Счёт1: %.2f, Счёт2: %.2f\n", acc1.getBalance().doubleValue(), acc4.getBalance().doubleValue());
+            bankTransfer.transfer(acc1, acc4, BigDecimal.valueOf(1000.0));
+            System.out.printf("Баланс после. Счёт1: %.2f, Счёт2: %.2f\n", acc1.getBalance().doubleValue(), acc4.getBalance().doubleValue());
+            try {
+                System.out.println("Попытка перевода со счета 1: ");
+                bankTransfer.transfer(acc1, acc2, BigDecimal.valueOf(500.5));}
+            catch (BankingException e) {System.out.println(e.getMessage());}
+
+            acc1.close();
+            try {
+                System.out.println("Попытка перевода со счета 1: ");
+                bankTransfer.transfer(acc1, acc2, BigDecimal.valueOf(500.5));}
+            catch (BankingException e) {System.out.println(e.getMessage());}
         } catch (BankingException e) {System.out.println(e.getMessage());}
     } catch (BankingException e) {System.out.println(e.getMessage());}
 }
