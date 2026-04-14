@@ -29,7 +29,7 @@ public static void main(String[] args){
             accountRepository.save(acc2);
             acc3 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
             accountRepository.save(acc3);
-            acc4 = new Account(cus, AccountType.SAVINGS, new BigDecimal(22000));
+            acc4 = new Account(cus2, AccountType.SAVINGS, new BigDecimal(22000));
             accountRepository.save(acc4);
             acc5 = new Account(cus2, AccountType.SAVINGS, new BigDecimal(22000));
             accountRepository.save(acc5);

@@ -1,5 +1,6 @@
 package bank.service;
 
+import bank.exceptions.BankingException;
 import bank.repository.AccountRepository;
 import bank.repository.CustomerRepository;
 import bank.models.Account;
@@ -7,6 +8,7 @@ import bank.models.AccountStatus;
 import bank.exceptions.InvalidAmountException;
 import bank.exceptions.InsufficientFundsException;
 import bank.exceptions.InvalidAccountStateException;
+import bank.logger.AsyncFileLogger;
 
 import java.math.BigDecimal;
 
@@ -21,16 +23,26 @@ public class AccountService {
 
     public synchronized void transfer(Account from, Account to, BigDecimal amount)
             throws InsufficientFundsException, InvalidAccountStateException, InvalidAmountException {
-        if (amount == null) throw new InvalidAmountException("сумма операции не указана");
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException("сумма операции меньше 0");
-        if (from.getStatus() != AccountStatus.ACTIVE) throw new InvalidAccountStateException("счёт списания неактивен");
-        if (to.getStatus() != AccountStatus.ACTIVE) throw new InvalidAccountStateException("счёт зачисления неактивен");
-        if (from.getBalance().compareTo(amount) < 0) throw new InsufficientFundsException(from.getBalance(), amount);
+        AsyncFileLogger logger = new AsyncFileLogger();
+        try {
+            if (amount == null) throw new InvalidAmountException("сумма операции не указана");
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new InvalidAmountException("сумма операции меньше 0");
+            if (from.getStatus() != AccountStatus.ACTIVE)
+                throw new InvalidAccountStateException("счёт списания неактивен");
+            if (to.getStatus() != AccountStatus.ACTIVE)
+                throw new InvalidAccountStateException("счёт зачисления неактивен");
+            if (from.getBalance().compareTo(amount) < 0)
+                throw new InsufficientFundsException(from.getBalance(), amount);
 
-        // TODO: not transactional - if deposit() fails after withdraw(), funds are lost
-        // Production fix: use two-phase commit or DB transactions
-        from.withdraw(amount);
-        to.deposit(amount);
+            // TODO: not transactional - if deposit() fails after withdraw(), funds are lost
+            // Production fix: use two-phase commit or DB transactions
+            from.withdraw(amount);
+            to.deposit(amount);
+            logger.info(String.join(" ","Transfer:", from.getNumber(), "->", to.getNumber(), "amount:", amount.toString()));
+        } catch (BankingException e) {
+            logger.error("Transfer failed", e);
+            throw e;
+        }
 
         }
     }
